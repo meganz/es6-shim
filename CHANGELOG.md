@@ -1,4 +1,36 @@
-# es6-shim x.x.x (not yet released)
+# es6-shim 0.35.0 (29 Feb 2016)
+* [Breaking] remove `Reflect.enumerate` (#405)
+* [New] Add `Array#indexOf` from post-ES6 errata
+* [New] Ensure `RegExp#toString` is compliant
+* [New] [sham] Add `Function#toString` to `es6-sham`
+* [Fix] ensure that a non-object `globals.Reflect` doesn’t break the shim (#392)
+* [Fix] In ES3 browsers (like Safari 4) `Reflect.getPrototypeOf` is undefined
+* [Fix] `Object.keys`: handle regexes in ES3 browsers (#287)
+* [Performance] Early exit from tanh for values outside of +-20 at limits of JS precision (#411)
+* [Tests] `Function#name` on `new Function`s is empty string in v8
+* [Tests] `Function#name` is non-configurable pre-ES6
+* [Tests] up to `node` `v5.7`, `v4.3`
+* [Docs] correct readme; we sham Function#name, not toString
+
+# es6-shim 0.34.4 (9 Feb 2016)
+* [Fix] 'Uncaught (in promise) TypeError' in Chrome 48 (#408, #407)
+* [Fix] handle the obscure case where `startsWith` throws on the second parameter (#399)
+* [Tests] silence a promise rejection error in Chrome
+
+# es6-shim 0.34.3 (8 Feb 2016)
+* [Fix] Suppress “uncaught rejection” warnings in Chrome 50 console (#403)
+* [Fix] ensure ES3 `Number` constants don’t get lost in ES3 browsers (#402)
+* [Dev Deps] update `chai`, `es5-shim`, `jscs`, `mocha`
+* [Tests] up to `node` `v5.5`
+
+# es6-shim 0.34.2 (22 Jan 2016)
+* [Fix] `JSON.stringify` should ignore a replacer arg unless it’s an array or function.
+* [Fix] `Array#copyWithin`: check for inherited properties as well
+* [Fix] `Array#copyWithin`: should delete the target key if the source key is not present
+* [Performance] Optimize Map/Set fast key path (#397)
+* [Tests] fix `Reflect.enumerate` tests to not call `next` too many times
+* [Dev Deps] update `jscs`, `jshint`
+* [Docs] update license year to 2016 (#400)
 
 # es6-shim 0.34.1 (5 Jan 2016)
 * [Fix] `RegExp#[Symbol.search]` was broken with a regex argument (#394)

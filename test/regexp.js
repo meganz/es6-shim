@@ -16,8 +16,10 @@ var ifShimIt = (typeof process !== 'undefined' && process.env.NO_ES6_SHIM) ? it.
 var hasSymbols = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' && typeof Symbol() === 'symbol';
 var ifSymbolsDescribe = hasSymbols ? describe : describe.skip;
 var defaultRegex = (function () {
+  // Chrome Canary 51 has an undefined RegExp#toSource, and
+  // RegExp#toString produces `/undefined/`
   try {
-    return String(RegExp.prototype);
+    return RegExp.prototype.source ? String(RegExp.prototype) : '/(?:)/';
   } catch (e) {
     return '/(?:)/';
   }
@@ -269,6 +271,35 @@ describe('RegExp', function () {
     });
   });
 
+  describe('#toString()', function () {
+    it('throws on null/undefined', function () {
+      expect(function () { RegExp.prototype.toString.call(null); }).to['throw'](TypeError);
+      expect(function () { RegExp.prototype.toString.call(undefined); }).to['throw'](TypeError);
+    });
+
+    it('works on regexes', function () {
+      expect(RegExp.prototype.toString.call(/a/g)).to.equal('/a/g');
+      expect(RegExp.prototype.toString.call(new RegExp('a', 'g'))).to.equal('/a/g');
+    });
+
+    it('works on non-regexes', function () {
+      expect(RegExp.prototype.toString.call({ source: 'abc', flags: '' })).to.equal('/abc/');
+      expect(RegExp.prototype.toString.call({ source: 'abc', flags: 'xyz' })).to.equal('/abc/xyz');
+    });
+
+    ifSymbolsDescribe('Symbol.match', function () {
+      if (!hasSymbols || typeof Symbol.match === 'undefined') {
+        return;
+      }
+
+      it('accepts a non-regex with Symbol.match', function () {
+        var obj = { source: 'abc', flags: 'def' };
+        obj[Symbol.match] = RegExp.prototype[Symbol.match];
+        expect(RegExp.prototype.toString.call(obj)).to.equal('/abc/def');
+      });
+    });
+  });
+
   describe('Object properties', function () {
     it('does not have the nonstandard $input property', function () {
       expect(RegExp).not.to.have.property('$input'); // Chrome < 39, Opera < 26 have this
@@ -323,7 +354,8 @@ describe('RegExp', function () {
     });
 
     describe('updates RegExp globals', function () {
-      var re, str = 'abcdefghijklmnopq';
+      var str = 'abcdefghijklmnopq';
+      var re;
       beforeEach(function () {
         re = /(b)(c)(d)(e)(f)(g)(h)(i)(j)(k)(l)(m)(n)(o)(p)/;
         re.exec(str);
