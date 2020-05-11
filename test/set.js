@@ -1,5 +1,3 @@
-/* global describe, it, xit, expect, require, beforeEach, afterEach */
-
 // Big thanks to V8 folks for test ideas.
 // v8/test/mjsunit/harmony/collections.js
 
@@ -25,9 +23,9 @@ Assertion.addMethod('theSameSet', function (otherArray) {
   );
 });
 
-var $iterator$ = typeof Symbol === 'function' ? Symbol.iterator : void 0;
-if (!$iterator$ && typeof Set === 'function') {
-  $iterator$ = typeof Set['@@iterator'] === 'function' ? '@@iterator' : '_es6-shim iterator_';
+var $iterator$ = typeof Symbol === 'function' ? Symbol.iterator : '_es6-shim iterator_';
+if (typeof Set === 'function' && typeof Set.prototype['@@iterator'] === 'function') {
+  $iterator$ = '@@iterator';
 }
 
 Assertion.addMethod('iterations', function (expected) {
@@ -47,6 +45,7 @@ describe('Set', function () {
   var functionsHaveNames = (function foo() {}).name === 'foo';
   var ifFunctionsHaveNamesIt = functionsHaveNames ? it : xit;
   var ifShimIt = (typeof process !== 'undefined' && process.env.NO_ES6_SHIM) ? it.skip : it;
+  var ifGetPrototypeOfIt = Object.getPrototypeOf ? it : xit;
 
   var range = function (from, to) {
     var result = [];
@@ -56,7 +55,7 @@ describe('Set', function () {
     return result;
   };
 
-  var prototypePropIsEnumerable = (function () {}).propertyIsEnumerable('prototype');
+  var prototypePropIsEnumerable = Object.prototype.propertyIsEnumerable.call(function () {}, 'prototype');
   var expectNotEnumerable = function (object) {
     if (prototypePropIsEnumerable && typeof object === 'function') {
       expect(Object.keys(object)).to.eql(['prototype']);
@@ -289,7 +288,7 @@ describe('Set', function () {
   });
 
   describe('#keys()', function () {
-    if (!Set.prototype.hasOwnProperty('keys')) {
+    if (!Object.prototype.hasOwnProperty.call(Set.prototype, 'keys')) {
       return it('exists', function () {
         expect(Set.prototype).to.have.property('keys');
       });
@@ -313,7 +312,7 @@ describe('Set', function () {
   });
 
   describe('#values()', function () {
-    if (!Set.prototype.hasOwnProperty('values')) {
+    if (!Object.prototype.hasOwnProperty.call(Set.prototype, 'values')) {
       return it('exists', function () {
         expect(Set.prototype).to.have.property('values');
       });
@@ -332,7 +331,7 @@ describe('Set', function () {
     });
 
     it('throws when called on a non-Set', function () {
-      var expectedMessage = /^(Method )?Set.prototype.values called on incompatible receiver |^values method called on incompatible |^Cannot create a Set value iterator for a non-Set object.$|^Set.prototype.values: 'this' is not a Set object$/;
+      var expectedMessage = /^(Method )?Set.prototype.values called on incompatible receiver |^values method called on incompatible |^Cannot create a Set value iterator for a non-Set object.$|^Set.prototype.values: 'this' is not a Set object$|^std_Set_iterator method called on incompatible \w+$|Set.prototype.values requires that \|this\| be Set/;
       var nonSets = [true, false, 'abc', NaN, new Map([[1, 2]]), { a: true }, [1], Object('abc'), Object(NaN)];
       nonSets.forEach(function (nonSet) {
         expect(function () { return Set.prototype.values.call(nonSet); }).to['throw'](TypeError, expectedMessage);
@@ -341,7 +340,7 @@ describe('Set', function () {
   });
 
   describe('#entries()', function () {
-    if (!Set.prototype.hasOwnProperty('entries')) {
+    if (!Object.prototype.hasOwnProperty.call(Set.prototype, 'entries')) {
       return it('exists', function () {
         expect(Set.prototype).to.have.property('entries');
       });
@@ -361,7 +360,7 @@ describe('Set', function () {
   });
 
   describe('#has()', function () {
-    if (!Set.prototype.hasOwnProperty('has')) {
+    if (!Object.prototype.hasOwnProperty.call(Set.prototype, 'has')) {
       return it('exists', function () {
         expect(Set.prototype).to.have.property('has');
       });
@@ -414,7 +413,7 @@ describe('Set', function () {
   });
 
   describe('has an iterator that works with Array.from', function () {
-    if (!Array.hasOwnProperty('from')) {
+    if (!Object.prototype.hasOwnProperty.call(Array, 'from')) {
       return it('requires Array.from to exist', function () {
         expect(Array).to.have.property('from');
       });
@@ -622,9 +621,7 @@ describe('Set', function () {
       zeroSet.forEach(function (key) {
         result.push(String(1 / key));
       });
-      expect(result.join(', ')).to.equal(
-        'Infinity, Infinity, 1'
-      );
+      expect(result.join(', ')).to.equal('Infinity, Infinity, 1');
     });
   });
 
@@ -635,5 +632,25 @@ describe('Set', function () {
   });
 
   it.skip('should throw proper errors when user invokes methods with wrong types of receiver', function () {
+  });
+
+  ifGetPrototypeOfIt('SetIterator identification test prototype inequality', function () {
+    var mapEntriesProto = Object.getPrototypeOf(new Map().entries());
+    var setEntriesProto = Object.getPrototypeOf(new Set().entries());
+    expect(mapEntriesProto).to.not.equal(setEntriesProto);
+  });
+
+  it('SetIterator identification', function () {
+    var fnSetValues = Set.prototype.values;
+    var setSentinel = new Set(['SetSentinel']);
+    var testSet1 = new Set();
+    var testSetValues = testSet1.values();
+    expect(testSetValues.next.call(fnSetValues.call(setSentinel)).value).to.equal('SetSentinel');
+
+    var testMap = new Map();
+    var testMapValues = testMap.values();
+    expect(function () {
+      return testMapValues.next.call(fnSetValues.call(setSentinel)).value;
+    }).to['throw'](TypeError);
   });
 });

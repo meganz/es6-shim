@@ -1,17 +1,17 @@
- /*!
-  * https://github.com/paulmillr/es6-shim
-  * @license es6-shim Copyright 2013-2016 by Paul Miller (http://paulmillr.com)
-  *   and contributors,  MIT License
-  * es6-sham: v0.35.0
-  * see https://github.com/paulmillr/es6-shim/blob/0.35.0/LICENSE
-  * Details and documentation:
-  * https://github.com/paulmillr/es6-shim/
-  */
+/*!
+ * https://github.com/paulmillr/es6-shim
+ * @license es6-shim Copyright 2013-2016 by Paul Miller (http://paulmillr.com)
+ *   and contributors,  MIT License
+ * es6-sham: v0.35.4
+ * see https://github.com/paulmillr/es6-shim/blob/0.35.3/LICENSE
+ * Details and documentation:
+ * https://github.com/paulmillr/es6-shim/
+ */
 
 // UMD (Universal Module Definition)
 // see https://github.com/umdjs/umd/blob/master/returnExports.js
 (function (root, factory) {
-  /*global define, exports, module */
+  /*global define */
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
     define(factory);
@@ -27,11 +27,9 @@
 }(this, function () {
   'use strict';
 
-  /*jshint evil: true */
   /* eslint-disable no-new-func */
   var getGlobal = new Function('return this;');
   /* eslint-enable no-new-func */
-  /*jshint evil: false */
 
   var globals = getGlobal();
   var Object = globals.Object;
@@ -50,7 +48,7 @@
   var arePropertyDescriptorsSupported = function () {
     // if Object.defineProperty exists but throws, it's IE 8
     return !throwsError(function () {
-      Object.defineProperty({}, 'x', { get: function () {} });
+      Object.defineProperty({}, 'x', { get: function () {} }); // eslint-disable-line getter-return
     });
   };
   var supportsDescriptors = !!Object.defineProperty && arePropertyDescriptorsSupported();
@@ -67,7 +65,6 @@
   (function () {
     if (Object.setPrototypeOf) { return; }
 
-    /*jshint proto: true */
     // @author    Andrea Giammarchi - @WebReflection
 
     var getOwnPropertyNames = Object.getOwnPropertyNames;
@@ -154,8 +151,11 @@
       configurable: true,
       enumerable: false,
       get: function () {
+        if (this === Function.prototype) {
+          return '';
+        }
         var str = _call(functionToString, this);
-        var match = _call(_strMatch, str, /\s*function\s+([^\(\s]*)\s*/);
+        var match = _call(_strMatch, str, /\s*function\s+([^(\s]*)\s*/);
         var name = match && match[1];
         Object.defineProperty(this, 'name', {
           configurable: true,

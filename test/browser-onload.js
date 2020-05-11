@@ -1,5 +1,3 @@
-/* global window, mocha */
-
 if (typeof window !== 'undefined') {
   window.completedTests = 0;
   window.sawFail = false;
@@ -8,7 +6,7 @@ if (typeof window !== 'undefined') {
     var handleResults = function (runner) {
       var failedTests = [];
       if (runner.stats.end) {
-        window.testsPassed = (runner.stats.failures === 0);
+        window.testsPassed = runner.stats.failures === 0;
       }
       runner.on('pass', function () {
         window.completedTests += 1;

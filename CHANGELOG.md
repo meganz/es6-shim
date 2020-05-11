@@ -1,3 +1,46 @@
+# es6-shim 0.35.5 (7 March 2019)
+* [Fix] `es6-sham`: `Function.prototype.name`: don’t poison the getter when the receiver is `Function.prototype` (#454)
+* [Dev Deps] update `eslint`, `@ljharb/eslint-config`
+* [Dev Deps] remove `jscs` and `jshint`
+
+# es6-shim 0.35.4 (29 October 2018)
+* [Fix] protect against evil build processes by ensuring these feature tests don‘t look like no-ops that are safe to remove
+* [Fix] broken `hasULPDistance` → working `withinULPDistance` helper
+* [Fix] `acosh`: fix precision (#338)
+* [Fix] `Math.{asinh,atanh,cosh,sinh}` precision (from #338)
+* [Fix] Google Translate adds a broken `Set` to the global scope (#438)
+* [Fix] Distinguish Set and Map iterators (#387)
+* [Docs] Tweaking documentation specifying inclusion order (#435)
+
+# es6-shim 0.35.3 (23 January 2017)
+* [Fix] avoid needlessly shimming `Array#{find, findIndex}` (#433)
+* [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `grunt-saucelabs`
+* [Tests] up to `node` `v7.4`, `v4.7`; improve test matrix
+
+# es6-shim 0.35.2 (3 December 2016)
+* [Fix] ensure `document.all` is not treated as a non-object-coercible (#428)
+* [Performance] Use original map for data backing when possible (#429, #422)
+* [Dev Deps] update `es5-shim`, `eslint`, `@ljharb/eslint-config`, `jscs`, `jshint`, `mocha`, `promises-plus-tests`, `uglify-js`
+* [Tests] up to `node` `v7.2`, `v5.12`, `v4.6`; improve test matrix
+* [Tests] avoid function name inference in node 7+
+* [Tests] add Firefox Nightly error messages to fix false failure
+
+# es6-shim 0.35.1 (12 May 2016)
+* [Fix] Functions are objects (#418)
+* [Fix] use `createDataPropertyOrThrow` in `Array.from`, rather than `[[Put]]` (#415)
+* [Refactor] Use `iteratorResult` internally for iterator result objects
+* [Refactor] Simplify logic for Math.tanh (#412)
+* [Robustness] cache `Math` constants
+* [Robustness] cache `Math.exp`
+* [Robustness] don’t rely on a `Math` lookup inside `Math.asinh`
+* [Robustness] use cached `Number.isNaN`
+* [Robustness] cache `Math.sign`
+* [Dev Deps] update `es5-shim`, `eslint`, `@ljharb/eslint-config`, `jscs`, `uglify-js`, `grunt-contrib-connect`, `grunt-contrib-watch`, `evalmd`, `jshint`
+* [Tests] up to `node` `v6.1`, `v5.10`, `v4.4`
+* [Tests] `npm run --silent`, use “pretest” for linting
+* [Tests] `RegExp#toString`: Chrome Canary 51 produces `/undefined/`
+* [Docs] update ES6 draft comment URLs to point to the published spec
+
 # es6-shim 0.35.0 (29 Feb 2016)
 * [Breaking] remove `Reflect.enumerate` (#405)
 * [New] Add `Array#indexOf` from post-ES6 errata

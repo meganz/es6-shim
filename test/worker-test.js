@@ -1,5 +1,3 @@
-/* global describe, it, expect, Worker, location */
-
 describe('Worker', function () {
   var workerErrorEventToError = function (errorEvent) {
     var errorText = 'Error in Worker';
