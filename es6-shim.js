@@ -2059,15 +2059,15 @@
   };
 
   defineProperties(Math, MathShims);
-  // Chrome < 40 sinh returns ∞ for large numbers
+  // Chrome < 40 sinh returns Inf for large numbers
   defineProperty(Math, 'sinh', MathShims.sinh, Math.sinh(710) === Infinity);
-  // Chrome < 40 cosh returns ∞ for large numbers
+  // Chrome < 40 cosh returns Inf for large numbers
   defineProperty(Math, 'cosh', MathShims.cosh, Math.cosh(710) === Infinity);
   // IE 11 TP has an imprecise log1p: reports Math.log1p(-1e-17) as 0
   defineProperty(Math, 'log1p', MathShims.log1p, Math.log1p(-1e-17) !== -1e-17);
   // IE 11 TP has an imprecise asinh: reports Math.asinh(-1e7) as not exactly equal to -Math.asinh(1e7)
   defineProperty(Math, 'asinh', MathShims.asinh, Math.asinh(-1e7) !== -Math.asinh(1e7));
-  // Chrome < 54 asinh returns ∞ for large numbers and should not
+  // Chrome < 54 asinh returns Inf for large numbers and should not
   defineProperty(Math, 'asinh', MathShims.asinh, Math.asinh(1e+300) === Infinity);
   // Chrome < 54 atanh incorrectly returns 0 for large numbers
   defineProperty(Math, 'atanh', MathShims.atanh, Math.atanh(1e-300) === 0);
